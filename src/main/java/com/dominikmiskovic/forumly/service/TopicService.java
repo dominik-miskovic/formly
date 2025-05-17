@@ -1,13 +1,9 @@
 package com.dominikmiskovic.forumly.service;
 
-import com.dominikmiskovic.forumly.config.PasswordEncoder;
 import com.dominikmiskovic.forumly.model.Topic;
-import com.dominikmiskovic.forumly.model.User;
 import com.dominikmiskovic.forumly.repository.TopicRepository;
-import com.dominikmiskovic.forumly.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
