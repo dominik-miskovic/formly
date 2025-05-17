@@ -1,5 +1,6 @@
 package com.dominikmiskovic.forumly.controller;
 
+import com.dominikmiskovic.forumly.helper.TimeAgoConverter;
 import com.dominikmiskovic.forumly.model.Topic;
 import com.dominikmiskovic.forumly.service.TopicService;
 import org.springframework.stereotype.Controller;
@@ -21,7 +22,7 @@ public class TopicController {
 
         Topic loadedTopic = topicService.loadTopic(id); // Assuming loadTopics returns a List<Topic>
         model.addAttribute("topic", loadedTopic); // Add topics to the model
-
+        model.addAttribute("timeAgo", new TimeAgoConverter());
         return "topic";
     }
 }

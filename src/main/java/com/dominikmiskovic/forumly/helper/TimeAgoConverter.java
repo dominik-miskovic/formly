@@ -1,4 +1,4 @@
-package com.dominikmiskovic.forumly.util; // Use the new package
+package com.dominikmiskovic.forumly.helper; // Use the new package
 
 import java.time.Duration;
 import java.time.Instant;
