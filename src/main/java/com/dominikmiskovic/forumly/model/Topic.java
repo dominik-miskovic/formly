@@ -9,6 +9,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -40,6 +41,13 @@ public class Topic {
 
     @UpdateTimestamp
     private Instant updatedAt;
+
+    // Voting
+    @OneToMany(mappedBy = "topic", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Vote> votes = new ArrayList<>();
+
+    private int voteCount; // Aggregated vote count
+
 
 }
 
