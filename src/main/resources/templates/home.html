@@ -5,34 +5,29 @@
     <title>Login</title>
     <link href="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.css" rel="stylesheet" />
 </head>
-<body>
+<body class="bg-white dark:bg-gray-900 ">
 <div th:insert="~{fragment/header :: header}"></div>
-    <section class="bg-white py-8 antialiased dark:bg-gray-900 md:py-16">
-        <div class="mx-auto max-w-screen-lg px-4 2xl:px-0">
-            <div class="lg:flex lg:items-center lg:justify-between lg:gap-4">
-                <h2 class="shrink-0 text-xl font-semibold text-gray-900 dark:text-white sm:text-2xl"><span th:text="'Topcis (' + ${topics.size()} + ')'">Topics (56)</span></h2>
+    <!-- Main Block -->
+    <section class="bg-white flex justify-center py-8 antialiased dark:bg-gray-900 md:py-16 w-auto">
 
-                <form class="mt-4 w-full gap-4 sm:flex sm:items-center sm:justify-end lg:mt-0">
-                    <label for="simple-search" class="sr-only">Search</label>
-                    <div class="relative w-full flex-1 lg:max-w-sm">
-                        <div class="pointer-events-none absolute inset-y-0 start-0 flex items-center ps-3">
-                            <svg class="h-4 w-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                                <path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="m21 21-3.5-3.5M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z" />
-                            </svg>
-                        </div>
-                        <input type="text" id="simple-search" class="block w-full rounded-lg border border-gray-300 bg-gray-50 px-4 py-2.5 ps-9 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500" placeholder="Search Questions & Answers" required />
-                    </div>
+        <div class="w-1/2 px-4">
+            <!-- Title and Actions -->
+            <div class="space-x-2 px-4 flex items-center lg:flex lg:items-center lg:justify-between lg:gap-4">
+                <h2 class="shrink-0 text-xl font-semibold text-gray-900 dark:text-white sm:text-2xl"><span th:text="'Topics (' + ${topics.size()} + ')'">Topics (56)</span></h2>
 
-                    <button type="button" data-modal-target="question-modal" data-modal-toggle="question-modal" class="mt-4 w-full shrink-0 rounded-lg bg-blue-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 sm:mt-0 sm:w-auto">Ask a question</button>
-                </form>
+                <button type="button" data-modal-target="question-modal" data-modal-toggle="question-modal" class="px-8 py-2.5 text-sm font-medium text-white inline-flex items-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                    <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14m-7 7V5"/>
+                    </svg>
+                    Post
+                </button>
             </div>
-
+            <!-- Topic List -->
             <div class="mt-6 flow-root">
                 <div class="-my-6 divide-y divide-gray-200 dark:divide-gray-800">
                     <div class="space-y-1.5 py-6 md:py-8" th:each="topic : ${topics}">
                         <a th:href="@{/topic/{id}(id=${topic.id})}" class="block cursor-pointer space-y-1.5 py-6 md:py-8 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg px-4 -mx-4">
                             <div class="grid gap-1">
-                                <!-- TODO: created the time Ago and username should be there  -->
                                 <span class="dark:text-gray-400 text-xs">
                                     <span th:text="${topic.author.username}">Bonnie Green</span>
                                     <span> · </span>
@@ -45,20 +40,10 @@
 
                             <!-- Actions -->
                             <div class="flex space-x-2">
-                                <!-- Votes TODO: different icons, color, hover -->
-                                <div class="rounded-lg bg-gray-100 w-20 flex items-center justify-center font-medium bg-white dark:bg-gray-700">
-                                    <button type="button"
-                                            class="text-gray-500 dark:text-gray-400 py-1 dark:hover:bg-gray-600 rounded-xl hover:bg-gray-200 w-full focus:ring-2 focus:outline-none focus:ring-gray-50 dark:bg-gray-700 dark:hover:bg-gray-700 dark:focus:ring-gray-600">
-                                        +
-                                    </button>
-                                    <span class="text-gray-900 font-m py-1 px-2 lg:px-0 text-xs lg:text-sm dark:text-white">0</span>
-                                    <button type="button"
-                                            class="text-gray-500 dark:text-gray-400 py-1 dark:hover:bg-gray-600 rounded-xl hover:bg-gray-200 w-full focus:ring-2 focus:outline-none focus:ring-gray-50 dark:bg-gray-700 dark:hover:bg-gray-700 dark:focus:ring-gray-600">
-                                        -
-                                    </button>
-                                </div>
+                                <!-- Include the actions fragment for the topic -->
+                                <div th:replace="~{fragment/voteFragment :: displayActions(voteCount=${topic.voteCount})}"></div>
                                 <!-- Comments TODO: icon plus count, hover -->
-                                <button type="button" class="inline-flex items-center px-5 py-2.5 text-sm font-medium text-center text-gray-500 dark:bg-gray-700 bg-gray-600 rounded-lg hover:bg-gray-800 focus:ring-4 focus:outline-none dark:text-gray-400 focus:ring-gray-300 dark:hover:bg-gray-700 dark:focus:ring-gray-800">
+                                <button type="button" class="inline-flex items-center px-5 py-2 text-sm font-medium text-center text-gray-500 dark:bg-gray-700 bg-gray-600 rounded-lg hover:bg-gray-800 focus:ring-4 focus:outline-none dark:text-gray-400 focus:ring-gray-300 dark:hover:bg-gray-700 dark:focus:ring-gray-800">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 50 50">
                                     <path d="M 25 4.0625 C 12.414063 4.0625 2.0625 12.925781 2.0625 24 C 2.0625 30.425781 5.625 36.09375 11 39.71875 C 10.992188 39.933594 11 40.265625 10.71875 41.3125 C 10.371094 42.605469 9.683594 44.4375 8.25 46.46875 L 7.21875 47.90625 L 9 47.9375 C 15.175781 47.964844 18.753906 43.90625 19.3125 43.25 C 21.136719 43.65625 23.035156 43.9375 25 43.9375 C 37.582031 43.9375 47.9375 35.074219 47.9375 24 C 47.9375 12.925781 37.582031 4.0625 25 4.0625 Z M 25 5.9375 C 36.714844 5.9375 46.0625 14.089844 46.0625 24 C 46.0625 33.910156 36.714844 42.0625 25 42.0625 C 22.996094 42.0625 21.050781 41.820313 19.21875 41.375 L 18.65625 41.25 L 18.28125 41.71875 C 18.28125 41.71875 15.390625 44.976563 10.78125 45.75 C 11.613281 44.257813 12.246094 42.871094 12.53125 41.8125 C 12.929688 40.332031 12.9375 39.3125 12.9375 39.3125 L 12.9375 38.8125 L 12.5 38.53125 C 7.273438 35.21875 3.9375 29.941406 3.9375 24 C 3.9375 14.089844 13.28125 5.9375 25 5.9375 Z"
                                           style="fill: none; stroke: currentColor; stroke-width: 4;"/>
@@ -70,28 +55,7 @@
                             </div>
                         </a>
                     </div>
-
-                    <!-- TODO Example that is not coming from the database -->
-                    <div class="space-y-4 py-6 md:py-8">
-                        <div class="grid gap-4">
-                            <div>
-                                <span class="inline-block rounded bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800 dark:bg-green-900 dark:text-green-300 md:mb-0"> 1 answer </span>
-                            </div>
-
-                            <a href="#" class="text-xl font-semibold text-gray-900 hover:underline dark:text-white">“Is this just the monitor?”</a>
-                        </div>
-                        <p class="text-base font-normal text-gray-500 dark:text-gray-400">It's an all-in-one (AIO). Which means everything in one structure. So it's not just a monitor it uses Apple's operating System, macOS and it has storage, CPU, GPU etc.</p>
-                        <p class="text-sm font-medium text-gray-500 dark:text-gray-400">
-                            Answered 1 day ago by
-                            <a href="#" class="text-gray-900 hover:underline dark:text-white">Jese Leos</a>
-                        </p>
-                    </div>
                 </div>
-            </div>
-
-            <!-- View mroe questions -->
-            <div class="mt-6 flex items-center justify-center lg:justify-start">
-                <button type="button" class="w-full rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700 sm:w-auto">View more questions</button>
             </div>
         </div>
     </section>
@@ -112,63 +76,15 @@
                     </button>
                 </div>
                 <!-- Modal body -->
-                <form class="p-4 md:p-5">
+                <form th:action="@{/topic}" method="post" class="p-4 md:p-5">
                     <div class="mb-4 grid grid-cols-2 gap-4">
                         <div class="col-span-2">
-                            <label for="question" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">Your question <span class="text-gray-500 dark:text-gray-400">(150-1000 characters)</span></label>
-                            <textarea id="question" rows="6" class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500" required=""></textarea>
-                        </div>
-                        <div class="col-span-2 grid gap-4 md:grid-cols-2">
-                            <div>
-                                <label for="question-type" class="mb-2 flex items-center text-sm font-medium text-gray-900 dark:text-white">
-                                    <span class="me-1">Question type</span>
-                                    <button type="button" data-tooltip-target="tooltip-dark" data-tooltip-style="dark" class="ml-1">
-                                        <svg aria-hidden="true" class="h-4 w-4 cursor-pointer text-gray-400 hover:text-gray-900 dark:text-gray-500 dark:hover:text-white" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd"></path></svg>
-                                        <span class="sr-only">Details</span>
-                                    </button>
-                                    <div id="tooltip-dark" role="tooltip" class="tooltip invisible absolute z-10 inline-block max-w-sm rounded-lg bg-gray-900 px-3 py-2 text-xs font-normal text-white opacity-0 shadow-sm dark:bg-gray-700">
-                                        Choose your question type to get a faster answer.
-                                        <div class="tooltip-arrow" data-popper-arrow></div>
-                                    </div>
-                                </label>
-                                <select id="question-type" class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500">
-                                    <option value="technical">Technical Question</option>
-                                    <option value="shipment">Shipment Question</option>
-                                    <option value="payment">Payment Issue</option>
-                                    <option value="other">Other</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label for="priority-type" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">Priority</label>
-                                <select id="priority-type" class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500">
-                                    <option value="very-high">Very High</option>
-                                    <option value="high">High</option>
-                                    <option value="medium">Medium</option>
-                                    <option value="low">Low</option>
-                                </select>
-                            </div>
+                            <label for="title" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">Title</label>
+                            <input id="title" name="title" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required=""></input>
                         </div>
                         <div class="col-span-2">
-                            <p class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">Upload files <span class="text-gray-500 dark:text-gray-400">(Optional)</span></p>
-                            <div class="flex w-full items-center justify-center">
-                                <label for="dropzone-file" class="dark:hover:bg-bray-800 flex h-48 w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 hover:bg-gray-100 dark:border-gray-600 dark:bg-gray-700 dark:hover:border-gray-500 dark:hover:bg-gray-600">
-                                    <div class="flex flex-col items-center justify-center pb-6 pt-5">
-                                        <svg class="mb-4 h-8 w-8 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
-                                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2" />
-                                        </svg>
-                                        <p class="mb-2 text-sm text-gray-500 dark:text-gray-400"><span class="font-semibold">Click to upload</span> or drag and drop</p>
-                                        <p class="text-xs text-gray-500 dark:text-gray-400">SVG, PNG, JPG or GIF (MAX. 800x400px)</p>
-                                    </div>
-                                    <input id="dropzone-file" type="file" class="hidden" />
-                                </label>
-                            </div>
-                        </div>
-
-                        <div class="col-span-2">
-                            <div class="flex items-center">
-                                <input id="link-checkbox" type="checkbox" value="" class="h-4 w-4 rounded border-gray-300 bg-gray-100 text-blue-600 focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-blue-600" />
-                                <label for="link-checkbox" class="ms-2 text-sm font-medium text-gray-500 dark:text-gray-400">I have read and agree with the <a href="#" class="text-blue-600 hover:underline dark:text-blue-500">terms and conditions</a>.</label>
-                            </div>
+                            <label for="content" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">Your topic content</label>
+                            <textarea id="content" name="content" rows="6" class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500" required=""></textarea>
                         </div>
                     </div>
                     <div class="border-t border-gray-200 pt-4 dark:border-gray-700 md:pt-5">

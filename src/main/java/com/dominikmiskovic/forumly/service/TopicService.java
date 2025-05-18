@@ -44,6 +44,10 @@ public class TopicService {
         return topic;
     }
 
+    public Topic saveTopic(Topic topic) {
+        return topicRepository.save(topic);
+    }
+
     private void setPostDepths(List<Post> posts) {
         if (posts == null) {
             return;
