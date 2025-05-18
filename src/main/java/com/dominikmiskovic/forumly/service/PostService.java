@@ -1,6 +1,7 @@
 package com.dominikmiskovic.forumly.service;
 
 import com.dominikmiskovic.forumly.dto.request.CreatePostRequest;
+import com.dominikmiskovic.forumly.dto.response.CommentResponse;
 import com.dominikmiskovic.forumly.dto.response.PostDetailResponse;
 import com.dominikmiskovic.forumly.dto.response.PostSummaryResponse;
 import com.dominikmiskovic.forumly.exception.ResourceNotFoundException;
@@ -105,7 +106,7 @@ public class PostService {
 
             dto.setComments(post.getComments().stream().map(c -> {
                 // Simplified mapping - in reality, use a CommentMapper
-                com.dominikmiskovic.forumly.dto.response.CommentResponse cr = new com.dominikmiskovic.forumly.dto.response.CommentResponse();
+                CommentResponse cr = new CommentResponse();
                 cr.setId(c.getId());
                 cr.setContent(c.getContent());
                 if(c.getAuthor() != null) cr.setAuthorUsername(c.getAuthor().getUsername());

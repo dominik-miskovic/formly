@@ -9,17 +9,17 @@ spring:
     username: sa
     password: password
   jpa:
-    hibernate:
-      ddl-auto: validate
+    # hibernate:
+      # ddl-auto: create
     # Optional: Defer DataSource initialization until after Hibernate schema generation
     # This ensures tables exist before data.sql is run. Often needed.
     defer-datasource-initialization: true
   application:
     name: "forumly"
-  sql:
-    init:
+  #sql:
+    #init:
       # SQL Script Initialization
       # 'always': Run data.sql (and schema.sql if present) every time.
       # 'embedded': Only run for embedded databases (like H2 in-memory).
       # 'never': Don't run.
-      mode: always
+      #mode: always

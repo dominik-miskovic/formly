@@ -89,7 +89,7 @@ public class CommentController {
         return "redirect:/posts/" + postId + "#comments-section";
     }
 
-    // You might add methods for editing or deleting comments here later, e.g.:
+    // TODO: You might add methods for editing or deleting comments here later, e.g.:
     // @PostMapping("/{commentId}/edit")
     // @PostMapping("/{commentId}/delete")
 }
