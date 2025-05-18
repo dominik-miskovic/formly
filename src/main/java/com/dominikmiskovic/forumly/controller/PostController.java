@@ -12,6 +12,7 @@ import com.dominikmiskovic.forumly.service.CommentService;
 import com.dominikmiskovic.forumly.service.PostService;
 import com.dominikmiskovic.forumly.service.UserService;
 import com.dominikmiskovic.forumly.service.VoteService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -47,7 +48,8 @@ public class PostController {
 
     // --- Displaying a single Post and its Comments ---
     @GetMapping("/{id}")
-    public String viewPost(@PathVariable Long id, Model model, Authentication authentication) {
+    public String viewPost(@PathVariable Long id, Model model, Authentication authentication,
+                           @ModelAttribute("newCommentRequestWithErrors") CreateCommentRequest commentRequestFromRedirect) {
         // Fetch the PostDetailResponse DTO from the service
 
         PostDetailResponse postDetail = postService.getPostDetailsById(id);
@@ -84,23 +86,15 @@ public class PostController {
         model.addAttribute("userVoteStatusMap", userVoteStatusMap);
 
         // For the new comment form
-        model.addAttribute("newCommentRequest", new CreateCommentRequest());
-        model.addAttribute("postId", id); // For the comment form action
+        if (!model.containsAttribute("newCommentRequest")) { // If not already populated by a redirect with errors
+            model.addAttribute("newCommentRequest", new CreateCommentRequest());
+        }
+        model.addAttribute("postId", id);
 
         return "post"; // Renders src/main/resources/templates/post.html
     }
 
-    // --- Creating a new Post ---
-    // 1. Show the form (if you have a dedicated page/modal trigger)
-    // This is typically handled by the modal in home.html or a /posts/new GET mapping
-    @GetMapping("/new")
-    public String showCreatePostForm(Model model) {
-        model.addAttribute("createPostRequest", new CreatePostRequest());
-        model.addAttribute("pageTitle", "Create New Post");
-        return "create-post-form"; // TODO e.g., a dedicated page for creating a post
-    }
-
-    // 2. Handle the form submission
+    // Handle the form submission
     @PostMapping
     public String createPost(@Valid @ModelAttribute("createPostRequest") CreatePostRequest createPostRequest,
                              BindingResult bindingResult,
@@ -108,25 +102,33 @@ public class PostController {
                              RedirectAttributes redirectAttributes,
                              Model model) {
 
-        if (bindingResult.hasErrors()) {
-            // If there are validation errors, return to the form view (or handle in modal context)
-            // This part is tricky if submitting from a modal on a different page (like home.html)
-            // You might need to pass errors back to the original page or handle with JS/AJAX for modals
-            model.addAttribute("pageTitle", "Create New Post");
-            // If submitting from home.html's modal, redirecting with errors is complex.
-            // A dedicated /posts/new page is easier for traditional form handling with errors.
-            return "create-post-form"; // Or logic to show modal again with errors
-        }
-
-        User currentUser = userService.findUserEntityByUsername(authentication.getName());
-        if (currentUser == null) {
-            // Should not happen if endpoint is secured
+        if (authentication == null || !authentication.isAuthenticated() || "anonymousUser".equals(authentication.getPrincipal())) {
             redirectAttributes.addFlashAttribute("errorMessage", "You must be logged in to create a post.");
             return "redirect:/login";
         }
 
-        Post savedPost = postService.createPost(createPostRequest, currentUser);
-        redirectAttributes.addFlashAttribute("successMessage", "Post created successfully!");
-        return "redirect:/posts/" + savedPost.getId();
+        User currentUser = userService.findUserEntityByUsername(authentication.getName());
+        if (currentUser == null) {
+            redirectAttributes.addFlashAttribute("errorMessage", "User account not found.");
+            return "redirect:/home"; // Or an error page
+        }
+
+        if (bindingResult.hasErrors()) {
+            redirectAttributes.addFlashAttribute("createPostRequest", createPostRequest); // Send back the DTO with user's input
+            redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.createPostRequest", bindingResult); // Send back errors
+            redirectAttributes.addFlashAttribute("postCreationError", "Please correct the errors in the form.");
+            return "redirect:" + ( model.asMap().get("javax.servlet.forward.request_uri") != null ? ((HttpServletRequest) model.asMap().get("javax.servlet.forward.request_uri")).getHeader("Referer") : "/home" );
+        }
+
+        try {
+            Post savedPost = postService.createPost(createPostRequest, currentUser);
+            redirectAttributes.addFlashAttribute("successMessage", "Post created successfully!");
+            return "redirect:/posts/" + savedPost.getId(); // Redirect to the new post's detail page
+        } catch (Exception e) {
+            // Log e
+            redirectAttributes.addFlashAttribute("errorMessage", "An error occurred while creating the post.");
+            // Decide where to redirect on a generic error
+            return "redirect:/home";
+        }
     }
 }

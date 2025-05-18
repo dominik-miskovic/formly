@@ -5,20 +5,16 @@ import com.dominikmiskovic.forumly.exception.ResourceNotFoundException;
 import com.dominikmiskovic.forumly.model.User;
 import com.dominikmiskovic.forumly.service.UserService;
 import com.dominikmiskovic.forumly.service.VoteService;
-import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.security.core.Authentication;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.HashMap;
-import java.util.Map;
-
-@RestController
-@RequestMapping("/api/votes")
+@Controller
+@RequestMapping("/votes")
 public class VoteController {
 
     private final VoteService voteService;
@@ -29,55 +25,48 @@ public class VoteController {
         this.userService = userService;
     }
 
-    @PostMapping("/cast") // Endpoint: POST /api/votes/cast
-    public ResponseEntity<?> castVote(@Valid @RequestBody VoteRequest voteRequest, Authentication authentication) {
+    @PostMapping("/cast") // Different endpoint to distinguish from API
+    public String castVoteForm(@RequestParam String targetType,
+                               @RequestParam Long targetId,
+                               @RequestParam int voteType,
+                               Authentication authentication,
+                               HttpServletRequest request, // To get referer for redirect
+                               RedirectAttributes redirectAttributes) {
+
         if (authentication == null || !authentication.isAuthenticated() || "anonymousUser".equals(authentication.getPrincipal())) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "User not authenticated. Please login to vote."));
+            redirectAttributes.addFlashAttribute("voteError", "User not authenticated. Please login to vote.");
+            return "redirect:/login";
         }
-        // name = username
+
         User currentUser = userService.findUserEntityByUsername(authentication.getName());
         if (currentUser == null) {
-            // This case should ideally not happen if authentication.isAuthenticated() is true
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "Authenticated user details not found."));
+            redirectAttributes.addFlashAttribute("voteError", "Authenticated user details not found.");
+            return "redirect:/home"; // Or some error page
         }
+
+        VoteRequest voteRequestDto = new VoteRequest(); // Manually create DTO from params
+        if ("POST".equalsIgnoreCase(targetType)) {
+            voteRequestDto.setPostId(targetId);
+        } else if ("COMMENT".equalsIgnoreCase(targetType)) {
+            voteRequestDto.setCommentId(targetId);
+        } else {
+            redirectAttributes.addFlashAttribute("voteError", "Invalid vote target type.");
+            String referer = request.getHeader("Referer");
+            return "redirect:" + (referer != null ? referer : "/home");
+        }
+        voteRequestDto.setVoteType(voteType);
 
         try {
-            voteService.castVote(voteRequest, currentUser);
-
-            // After successfully casting the vote, get the new total vote count for the target
-            int newVoteCount;
-            String targetType; // For the response
-
-            if (voteRequest.getPostId() != null) {
-                newVoteCount = voteService.getVoteCountForPost(voteRequest.getPostId());
-                targetType = "POST";
-            } else if (voteRequest.getCommentId() != null) {
-                newVoteCount = voteService.getVoteCountForComment(voteRequest.getCommentId());
-                targetType = "COMMENT";
-            } else {
-                // This case should have been caught by voteService.castVote's internal validation
-                return ResponseEntity.badRequest().body(Map.of("error", "Invalid vote request: missing postId or commentId."));
-            }
-
-            Map<String, Object> response = new HashMap<>();
-            response.put("message", "Vote cast successfully.");
-            response.put("newVoteCount", newVoteCount);
-            response.put("targetId", voteRequest.getPostId() != null ? voteRequest.getPostId() : voteRequest.getCommentId());
-            response.put("targetType", targetType);
-            response.put("userVoteType", voteRequest.getVoteType()); // The vote type just cast
-
-            return ResponseEntity.ok(response);
-
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
-        } catch (ResourceNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", e.getMessage()));
-        } catch (SecurityException e) { // If voteService ever throws this for some reason
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("error", e.getMessage()));
+            voteService.castVote(voteRequestDto, currentUser);
+            redirectAttributes.addFlashAttribute("voteSuccess", "Vote cast successfully!");
+        } catch (IllegalArgumentException | ResourceNotFoundException e) {
+            redirectAttributes.addFlashAttribute("voteError", e.getMessage());
         } catch (Exception e) {
-            // Log the exception for internal review
-            // logger.error("Error casting vote: ", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "An unexpected error occurred while casting your vote."));
+            // Log e
+            redirectAttributes.addFlashAttribute("voteError", "An unexpected error occurred.");
         }
+
+        String referer = request.getHeader("Referer");
+        return "redirect:" + (referer != null ? referer : "/home");
     }
 }

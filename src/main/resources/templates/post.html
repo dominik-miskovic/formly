@@ -56,7 +56,20 @@
                     <li th:each="err : ${#fields.errors('newCommentRequestWithErrors.*')}" th:text="${err}"></li>
                 </ul>
             </div>
-            <form th:action="@{/posts/{postId}/comments(postId=${postDetail.id})}" th:object="${newCommentRequest}" method="post">
+            <form th:action="@{/posts/{postId}/comments(postId=${postDetail.id})}" method="post" th:object="${newCommentRequest}">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+                <!-- Display general errors passed as flash attribute (if you add one) -->
+                <div th:if="${flashErrorMessage}" class="alert alert-danger" th:text="${flashErrorMessage}"></div>
+
+                <!-- Display binding errors for comment content -->
+                <div th:if="${#fields.hasErrors('content')}" class="mb-2 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+                    <p th:each="err : ${#fields.errors('content')}" th:text="${err}"></p>
+                </div>
+                <!-- Global errors for the form object -->
+                <div th:if="${#fields.hasGlobalErrors()}" class="mb-2 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+                    <p th:each="err : ${#fields.globalErrors()}" th:text="${err}"></p>
+                </div>
               <div class="w-full mb-4 border border-gray-200 rounded-lg bg-gray-50 dark:bg-gray-700 dark:border-gray-600">
                   <div class="px-4 py-2 bg-white rounded-t-lg dark:bg-gray-800">
                       <label for="comment" class="sr-only">Your comment</label>

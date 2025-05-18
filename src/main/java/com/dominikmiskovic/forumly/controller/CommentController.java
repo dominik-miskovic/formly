@@ -9,7 +9,6 @@ import com.dominikmiskovic.forumly.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -34,11 +33,10 @@ public class CommentController {
     // This method handles the submission of the "new comment" or "reply to comment" form
     @PostMapping // Mapped to POST /posts/{postId}/comments
     public String createComment(@PathVariable Long postId,
-                                @Valid @ModelAttribute("newCommentRequest") CreateCommentRequest createCommentRequest,
-                                BindingResult bindingResult,
+                                @Valid @ModelAttribute("newCommentRequest") CreateCommentRequest createCommentRequest, // Form object
+                                BindingResult bindingResult, // Errors for "newCommentRequest"
                                 Authentication authentication,
-                                RedirectAttributes redirectAttributes,
-                                Model model) { // Added Model for re-rendering with errors
+                                RedirectAttributes redirectAttributes) {
 
         // 1. Check if user is authenticated
         if (authentication == null || !authentication.isAuthenticated() || "anonymousUser".equals(authentication.getPrincipal())) {
@@ -66,25 +64,12 @@ public class CommentController {
 
         // 4. Validate the DTO
         if (bindingResult.hasErrors()) {
-            // If there are validation errors, we need to redirect back to the post detail page
-            // and display the errors. This is a bit tricky with redirects.
-            // A common way is to use FlashAttributes to pass the DTO and errors.
-            // Or, more simply for now, just redirect with a generic error.
-            // For a better UX, you'd repopulate the post detail page and show errors next to the form.
-
-            // To re-render the form with errors on the same page (post detail):
-            // You would essentially need to duplicate the logic from PostController.viewPost() here
-            // to repopulate the model, which is not ideal.
-            // This is why AJAX form submissions are often preferred for comments.
-
-            // Simpler redirect with a generic error for now:
-            redirectAttributes.addFlashAttribute("commentFormError", "There were errors in your comment. Please try again.");
-            redirectAttributes.addFlashAttribute("newCommentRequestWithErrors", createCommentRequest); // Pass back the DTO
-            redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.newCommentRequestWithErrors", bindingResult); // Pass back errors
-
-            return "redirect:/posts/" + postId + "#comments-section"; // Redirect back to the form
+            // Add the DTO itself (with user's input) and its BindingResult as flash attributes
+            // The name of the DTO flash attribute ("newCommentRequest") MUST match the @ModelAttribute name
+            redirectAttributes.addFlashAttribute("newCommentRequest", createCommentRequest);
+            redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.newCommentRequest", bindingResult);
+            return "redirect:/posts/" + postId + "#comments-section";
         }
-
 
         // 5. Call the service to create the comment
         try {

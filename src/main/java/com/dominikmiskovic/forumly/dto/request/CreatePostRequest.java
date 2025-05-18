@@ -13,6 +13,5 @@ public class CreatePostRequest {
 
     @NotBlank(message = "Post content cannot be empty.")
     @Size(min = 10, max = 40000, message = "Post content must be between 10 and 40,000 characters.")
-
     private String content;
 }
