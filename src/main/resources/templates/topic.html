@@ -12,7 +12,7 @@
 <body class="bg-white dark:bg-gray-900">
 <div th:replace="~{fragment/header :: header}"></div>
 
-<div class="space-y-1.5 py-6 md:py-8" th:each="topic : ${topic}">
+<div class="space-y-1.5" th:each="topic : ${topic}">
     <div  class="block space-y-1.5 py-6 md:py-8 rounded-lg px-4 -mx-4">
         <div class="grid gap-1">
             <!-- TODO: created the time Ago and username should be there  -->
@@ -28,20 +28,10 @@
 
         <!-- Actions TODO: put as fragment -->
         <div class="flex space-x-2">
-            <!-- Votes TODO: different icons, color, hover -->
-            <div class="rounded-lg bg-gray-100 w-20 flex items-center justify-center font-medium bg-white dark:bg-gray-700">
-                <button type="button"
-                        class="text-gray-500 dark:text-gray-400 py-1 dark:hover:bg-gray-600 rounded-xl hover:bg-gray-200 w-full focus:ring-2 focus:outline-none focus:ring-gray-50 dark:bg-gray-700 dark:hover:bg-gray-700 dark:focus:ring-gray-600">
-                    +
-                </button>
-                <span class="text-gray-900 font-m py-1 px-2 lg:px-0 text-xs lg:text-sm dark:text-white">0</span>
-                <button type="button"
-                        class="text-gray-500 dark:text-gray-400 py-1 dark:hover:bg-gray-600 rounded-xl hover:bg-gray-200 w-full focus:ring-2 focus:outline-none focus:ring-gray-50 dark:bg-gray-700 dark:hover:bg-gray-700 dark:focus:ring-gray-600">
-                    -
-                </button>
-            </div>
+            <!-- Votes -->
+            <div th:replace="~{fragment/voteFragment :: displayActions(voteCount=${topic.voteCount})}"></div>
             <!-- Comments TODO: icon plus count, hover -->
-            <button type="button" class="inline-flex items-center px-5 py-2.5 text-sm font-medium text-center text-gray-500 dark:bg-gray-700 bg-gray-600 rounded-lg hover:bg-gray-800 focus:ring-4 focus:outline-none dark:text-gray-400 focus:ring-gray-300 dark:hover:bg-gray-700 dark:focus:ring-gray-800">
+            <button type="button" class="inline-flex items-center px-5 text-sm font-medium text-center text-gray-500 dark:bg-gray-700 bg-gray-600 rounded-lg hover:bg-gray-800 focus:ring-4 focus:outline-none dark:text-gray-400 focus:ring-gray-300 dark:hover:bg-gray-700 dark:focus:ring-gray-800">
                 <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 50 50">
                     <path d="M 25 4.0625 C 12.414063 4.0625 2.0625 12.925781 2.0625 24 C 2.0625 30.425781 5.625 36.09375 11 39.71875 C 10.992188 39.933594 11 40.265625 10.71875 41.3125 C 10.371094 42.605469 9.683594 44.4375 8.25 46.46875 L 7.21875 47.90625 L 9 47.9375 C 15.175781 47.964844 18.753906 43.90625 19.3125 43.25 C 21.136719 43.65625 23.035156 43.9375 25 43.9375 C 37.582031 43.9375 47.9375 35.074219 47.9375 24 C 47.9375 12.925781 37.582031 4.0625 25 4.0625 Z M 25 5.9375 C 36.714844 5.9375 46.0625 14.089844 46.0625 24 C 46.0625 33.910156 36.714844 42.0625 25 42.0625 C 22.996094 42.0625 21.050781 41.820313 19.21875 41.375 L 18.65625 41.25 L 18.28125 41.71875 C 18.28125 41.71875 15.390625 44.976563 10.78125 45.75 C 11.613281 44.257813 12.246094 42.871094 12.53125 41.8125 C 12.929688 40.332031 12.9375 39.3125 12.9375 39.3125 L 12.9375 38.8125 L 12.5 38.53125 C 7.273438 35.21875 3.9375 29.941406 3.9375 24 C 3.9375 14.089844 13.28125 5.9375 25 5.9375 Z"
                           style="fill: none; stroke: currentColor; stroke-width: 4;"/>
@@ -54,7 +44,7 @@
 
 
 <!-- Block start -->
-    <section class="bg-white dark:bg-gray-900 py-8 lg:py-16">
+    <section class="bg-white dark:bg-gray-900">
         <div class="mx-auto px-4">
             <form th:action="@{/topic/{topicId}/post(topicId=${topic.id})}" method="post">
               <div class="w-full mb-4 border border-gray-200 rounded-lg bg-gray-50 dark:bg-gray-700 dark:border-gray-600">
@@ -78,6 +68,13 @@
     <!-- Block end -->
 
     <script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
+    <script>
+        function toggleReplyForm(button) {
+            const postId = button.getAttribute('data-post-id');
+            const replyForm = document.getElementById('replyForm-' + postId);
+            replyForm.classList.toggle('hidden');
+        }
+    </script>
 </body>
 
 </html>

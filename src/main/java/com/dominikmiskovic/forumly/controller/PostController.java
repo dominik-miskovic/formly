@@ -29,7 +29,8 @@ public class PostController {
 
     @PostMapping("/topic/{topicId}/post")
     public String createPost(@PathVariable Integer topicId,
-                             @RequestParam String content) { // Get content from form
+                             @RequestParam String content,
+                             @RequestParam(required = false) Integer parentPostId) { // Get content from form
 
         // Get the current logged-in user (using Spring Security example)
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -46,14 +47,24 @@ public class PostController {
         newPost.setContent(content);
         newPost.setTopic(topic);
         newPost.setAuthor(currentUser);
-        // Set parentPost if this is a reply to another post (you'll need to handle this in your form)
-        // For now, let's assume it's a top-level post if no parent is specified
-        newPost.setParentPost(null); // Or get parentPostId from the form and set it TODO: Is this right
 
-        // Save the post using your PostService
-        postService.savePost(newPost); // You'll need a savePost method in your PostService
+        // Set parentPost if parentPostId is provided
+        if (parentPostId != null) {
+            // Find the parent post by ID
+            Post parentPost = postService.findPostById(parentPostId); // You'll need to implement this in PostService
+            newPost.setParentPost(parentPost);
+        } else {
+            // If no parentPostId, it's a top-level post
+            newPost.setParentPost(null);
+        }
 
-        // Redirect back to the topic page after creating the post
-        return "redirect:/topic/" + topicId;
+
+        // Save the post and get the saved instance with the generated ID
+        Post savedPost = postService.savePost(newPost);
+
+
+        // Redirect to the topic page with an anchor to the new post's ID
+        return "redirect:/topic/" + topicId + "#post-" + savedPost.getId();
+
     }
 }
