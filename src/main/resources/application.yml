@@ -10,7 +10,7 @@ spring:
     password: password
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: validate
     # Optional: Defer DataSource initialization until after Hibernate schema generation
     # This ensures tables exist before data.sql is run. Often needed.
     defer-datasource-initialization: true

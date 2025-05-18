@@ -56,6 +56,7 @@ public class PostService {
         PostSummaryResponse dto = new PostSummaryResponse();
         dto.setId(post.getId());
         dto.setTitle(post.getTitle());
+        dto.setContent(post.getContent());
         if (post.getAuthor() != null) {
             dto.setAuthorUsername(post.getAuthor().getUsername());
         }
