@@ -76,11 +76,26 @@ INSERT INTO comment (content, post_id, user_id, created_at, updated_at) VALUES
 
 -- Comments for Post 7 (created ~1 month ago)
 INSERT INTO comment (content, post_id, user_id, created_at, updated_at) VALUES
-                                                                            ('Yum, that recipe sounds great!', 7, 3, DATEADD('MONTH', -1, DATEADD('DAY', 3, DATEADD('HOUR', 1, CURRENT_TIMESTAMP))), DATEADD('MONTH', -1, DATEADD('DAY', 3, DATEADD('HOUR', 1, CURRENT_TIMESTAMP)))),
-                                                                            ('I will try this weekend.', 7, 4, DATEADD('MONTH', -1, DATEADD('DAY', 4, CURRENT_TIMESTAMP)), DATEADD('MONTH', -1, DATEADD('DAY', 4, CURRENT_TIMESTAMP))),
-                                                                            ('Do you have nutritional information?', 7, 5, DATEADD('DAY', -20, CURRENT_TIMESTAMP)), DATEADD('DAY', -20, CURRENT_TIMESTAMP)), -- Comment from 20 days ago
-('Thanks for sharing!', 7, 1, DATEADD('DAY', -15, CURRENT_TIMESTAMP)), DATEADD('DAY', -15, CURRENT_TIMESTAMP)),
-('Looks delicious!', 7, 2, DATEADD('DAY', -10, CURRENT_TIMESTAMP)), DATEADD('DAY', -10, CURRENT_TIMESTAMP));
+                                                                            ('Yum, that recipe sounds great!', 7, 3,
+                                                                             DATEADD('MONTH', -1, DATEADD('DAY', 3, DATEADD('HOUR', 1, CURRENT_TIMESTAMP))),
+                                                                             DATEADD('MONTH', -1, DATEADD('DAY', 3, DATEADD('HOUR', 1, CURRENT_TIMESTAMP)))
+                                                                            ), -- End of row 1
+                                                                            ('I will try this weekend.', 7, 4,
+                                                                             DATEADD('MONTH', -1, DATEADD('DAY', 4, CURRENT_TIMESTAMP)),
+                                                                             DATEADD('MONTH', -1, DATEADD('DAY', 4, CURRENT_TIMESTAMP))
+                                                                            ), -- End of row 2
+                                                                            ('Do you have nutritional information?', 7, 5,
+                                                                             DATEADD('DAY', -20, CURRENT_TIMESTAMP),  -- This was the line with the error
+                                                                             DATEADD('DAY', -20, CURRENT_TIMESTAMP)   -- This is its corresponding updated_at
+                                                                            ), -- End of row 3
+                                                                            ('Thanks for sharing!', 7, 1,
+                                                                             DATEADD('DAY', -15, CURRENT_TIMESTAMP),
+                                                                             DATEADD('DAY', -15, CURRENT_TIMESTAMP)
+                                                                            ), -- End of row 4
+                                                                            ('Looks delicious!', 7, 2,
+                                                                             DATEADD('DAY', -10, CURRENT_TIMESTAMP),
+                                                                             DATEADD('DAY', -10, CURRENT_TIMESTAMP)
+                                                                            ); -- End of row 5 and statement
 
 -- Comments for Post 8 (created ~1 month ago, few days after post 7)
 INSERT INTO comment (content, post_id, user_id, created_at, updated_at) VALUES

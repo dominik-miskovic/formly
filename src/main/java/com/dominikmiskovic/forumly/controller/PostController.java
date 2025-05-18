@@ -129,42 +129,4 @@ public class PostController {
         redirectAttributes.addFlashAttribute("successMessage", "Post created successfully!");
         return "redirect:/posts/" + savedPost.getId();
     }
-
-
-    // --- Creating a new Comment on a Post ---
-    @PostMapping("/{postId}/comments")
-    public String createComment(@PathVariable Long postId,
-                                @Valid @ModelAttribute("newCommentRequest") CreateCommentRequest createCommentRequest,
-                                BindingResult bindingResult,
-                                Authentication authentication,
-                                RedirectAttributes redirectAttributes,
-                                Model model) { // Add Model for re-rendering form with errors
-
-        User currentUser = userService.findUserEntityByUsername(authentication.getName());
-        if (currentUser == null) {
-            redirectAttributes.addFlashAttribute("errorMessage", "You must be logged in to comment.");
-            return "redirect:/login";
-        }
-
-        // Ensure the request's postId matches the path variable and set it if not already
-        createCommentRequest.setPostId(postId);
-
-        if (bindingResult.hasErrors()) {
-            // If validation errors, re-render the post detail page with the form showing errors
-            // We need to re-populate the model for the post detail page
-            PostDetailResponse postDetail = postService.getPostDetailsById(postId);
-            model.addAttribute("postDetail", postDetail);
-            model.addAttribute("timeAgo", new TimeAgoConverter());
-            model.addAttribute("currentUser", currentUser);
-            // Re-populate user vote status map (or make it part of PostDetailResponse if always needed)
-            // ... (logic for userVoteStatusMap as in viewPost method) ...
-            model.addAttribute("errorMessage", "Failed to post comment. Please check errors.");
-            return "post"; // Return to the post detail page
-        }
-
-
-        commentService.createComment(createCommentRequest, currentUser);
-        redirectAttributes.addFlashAttribute("successMessage", "Comment posted successfully!");
-        return "redirect:/posts/" + postId + "#comments-section"; // Redirect back to the post, possibly to comments anchor
-    }
 }
