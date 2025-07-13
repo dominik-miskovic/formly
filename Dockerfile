@@ -6,7 +6,7 @@ LABEL authors="dominikmiskovic"
 WORKDIR /app
 
 # Copy the packaged application JAR file to the container
-COPY target/your-application-name.jar app.jar
+COPY target/forumly-app.jar app.jar
 
 # Expose the port your application runs on
 EXPOSE 8080
