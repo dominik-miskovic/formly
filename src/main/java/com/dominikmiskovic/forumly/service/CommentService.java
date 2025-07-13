@@ -29,9 +29,24 @@ public class CommentService {
         this.userRepository = userRepository;
     }
 
+    /**
+     * NEW: Public method to get a structured tree of comments for a post.
+     * This is the method that PostService will call.
+     */
+    @Transactional(readOnly = true)
+    public List<CommentResponse> getCommentsWithReplies(Long postId) {
+        // 1. Fetch all comments for the post in one go.
+        List<Comment> allCommentsForPost = commentRepository.findByPostId(postId);
+
+        // 2. Use your existing `buildCommentTree` method to do the hard work.
+        // Note: Passing null for currentUser as the current conversion logic doesn't use it.
+        // If you later need user-specific info in the DTO, you'll need to pass the user here.
+        return buildCommentTree(allCommentsForPost, null);
+    }
+
     // Method to CREATE a new comment
-    @Transactional // Good practice for operations that modify data
-    public Comment createComment(CreateCommentRequest request, User authenticatedUser) {
+    @Transactional
+    public void createComment(CreateCommentRequest request, User authenticatedUser) {
         // 1. Validate that the Post exists
         Post post = postRepository.findById(request.getPostId())
                 .orElseThrow(() -> new ResourceNotFoundException("Post not found with id: " + request.getPostId()));
@@ -54,7 +69,7 @@ public class CommentService {
         newComment.setAuthor(authenticatedUser); // Set the author from the authenticated user
         newComment.setParentComment(parentComment); // Set parent if it's a reply
 
-        return commentRepository.save(newComment);
+        commentRepository.save(newComment);
     }
 
     // Method to get a comment by its ID
@@ -155,7 +170,7 @@ public class CommentService {
         dto.setCreatedAt(entity.getCreatedAt());
         dto.setUpdatedAt(entity.getUpdatedAt());
         dto.setVoteCount(entity.getVoteCount()); // From @Transient method
-        // dto.setParentId(entity.getParentComment() != null ? entity.getParentComment().getId() : null); // Could be useful
+
         // Initialize replies list
         dto.setReplies(new ArrayList<>());
         return dto;

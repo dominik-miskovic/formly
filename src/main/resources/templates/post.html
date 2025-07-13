@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Publisher UI</title>
+    <title>Forumly</title>
     <link href="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.css" rel="stylesheet" />
 </head>
 
@@ -46,7 +46,7 @@
     </div>
 
 
-<!-- Block start -->
+    <!-- Block start -->
     <section class="bg-white dark:bg-gray-900">
         <div class="mx-auto px-4">
             <!-- Error handling TODO: Check if positioning looks good -->
@@ -109,8 +109,8 @@
     <script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
     <script>
         function toggleReplyForm(button) {
-            const postId = button.getAttribute('data-post-id');
-            const replyForm = document.getElementById('replyForm-' + postId);
+            const commentId = button.getAttribute('data-comment-id');
+            const replyForm = document.getElementById('replyForm-' + commentId);
             replyForm.classList.toggle('hidden');
         }
     </script>

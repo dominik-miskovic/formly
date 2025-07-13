@@ -1,7 +1,6 @@
 package com.dominikmiskovic.forumly.service;
 
 import com.dominikmiskovic.forumly.dto.request.CreatePostRequest;
-import com.dominikmiskovic.forumly.dto.response.CommentResponse;
 import com.dominikmiskovic.forumly.dto.response.PostDetailResponse;
 import com.dominikmiskovic.forumly.dto.response.PostSummaryResponse;
 import com.dominikmiskovic.forumly.exception.ResourceNotFoundException;
@@ -15,22 +14,24 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.stream.Collectors;
-
 @Service
 public class PostService {
 
     private final PostRepository postRepository;
     private final UserRepository userRepository;
     private final VoteRepository voteRepository;
+    private final CommentService commentService;
+
 
     public PostService(PostRepository postRepository,
                        UserRepository userRepository,
-                       VoteRepository voteRepository
+                       VoteRepository voteRepository,
+                       CommentService commentService
     ) {
         this.postRepository = postRepository;
         this.userRepository = userRepository;
         this.voteRepository = voteRepository;
+        this.commentService = commentService;
     }
 
     // Method to CREATE a new Post
@@ -44,7 +45,7 @@ public class PostService {
         return postRepository.save(newPost);
     }
 
-    // Method to GET all posts (summaries, paginated)
+    // Method to GET all posts (summaries, TODO: paginated?)
     @Transactional(readOnly = true)
     public Page<PostSummaryResponse> getAllPostSummaries(Pageable pageable) {
         Page<Post> postPage = postRepository.findAll(pageable); // Fetches a page of Post entities
@@ -101,26 +102,14 @@ public class PostService {
         Integer voteCount = voteRepository.sumVoteTypesByPostId(post.getId());
         dto.setVoteCount(voteCount);
 
-        // Populate comments if needed (could be lazy-loaded or fetched separately)
-        if (post.getComments() != null) {
+        // Populate comments
+        dto.setComments(commentService.getCommentsWithReplies(post.getId()));
 
-            dto.setComments(post.getComments().stream().map(c -> {
-                // Simplified mapping - in reality, use a CommentMapper
-                CommentResponse cr = new CommentResponse();
-                cr.setId(c.getId());
-                cr.setContent(c.getContent());
-                if(c.getAuthor() != null) cr.setAuthorUsername(c.getAuthor().getUsername());
-                cr.setCreatedAt(c.getCreatedAt());
-
-                cr.setVoteCount(c.getVoteCount()); // Using the @Transient getVoteCount() on Comment entity
-                return cr;
-            }).collect(Collectors.toList()));
-        }
         return dto;
     }
 
 
-    // Method to UPDATE an existing Post
+    // Method to UPDATE an existing Post TODO: Not implkemented yet
     @Transactional
     public Post updatePost(Long postId, /* UpdatePostRequest request, */ String newTitle, String newContent, User authenticatedUser) {
         Post postToUpdate = postRepository.findById(postId)
@@ -138,7 +127,7 @@ public class PostService {
         return postRepository.save(postToUpdate);
     }
 
-    // Method to DELETE a Post
+    // Method to DELETE a Post TODO: Not implemented yet
     @Transactional
     public void deletePost(Long postId, User authenticatedUser) {
         Post postToDelete = postRepository.findById(postId)

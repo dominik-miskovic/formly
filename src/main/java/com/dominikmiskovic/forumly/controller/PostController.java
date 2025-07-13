@@ -51,7 +51,6 @@ public class PostController {
     public String viewPost(@PathVariable Long id, Model model, Authentication authentication,
                            @ModelAttribute("newCommentRequestWithErrors") CreateCommentRequest commentRequestFromRedirect) {
         // Fetch the PostDetailResponse DTO from the service
-
         PostDetailResponse postDetail = postService.getPostDetailsById(id);
         model.addAttribute("postDetail", postDetail);
         model.addAttribute("timeAgo", new TimeAgoConverter());
