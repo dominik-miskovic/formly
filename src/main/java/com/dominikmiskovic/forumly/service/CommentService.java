@@ -128,6 +128,12 @@ public class CommentService {
         commentRepository.delete(commentToDelete);
     }
 
+    // Method to efficiently count all comments for a post.
+    @Transactional(readOnly = true)
+    public long getCommentCountForPost(Long postId) {
+        return commentRepository.countByPostId(postId);
+    }
+
     // In a mapper or service method that converts List<Comment> (entities) to List<CommentResponse> (DTOs for top-level)
     public List<CommentResponse> buildCommentTree(List<Comment> allCommentsForPost, User currentUser) {
         Map<Long, CommentResponse> dtoMap = new HashMap<>();
@@ -170,6 +176,11 @@ public class CommentService {
         dto.setCreatedAt(entity.getCreatedAt());
         dto.setUpdatedAt(entity.getUpdatedAt());
         dto.setVoteCount(entity.getVoteCount()); // From @Transient method
+
+        // Set the parentId if the comment is a reply
+        if (entity.getParentComment() != null) {
+            dto.setParentId(entity.getParentComment().getId());
+        }
 
         // Initialize replies list
         dto.setReplies(new ArrayList<>());

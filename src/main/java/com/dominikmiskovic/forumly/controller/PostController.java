@@ -21,9 +21,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 
 @Controller
@@ -72,9 +70,14 @@ public class PostController {
             Optional<Vote> userPostVote = voteService.getUserVoteForPost(currentUser, postDetail.getId());
             userPostVote.ifPresent(vote -> postVotes.put(postDetail.getId(), vote.getVoteType()));
 
-            // User's vote on each comment
+            // User's vote on each comment (including nested replies)
             if (postDetail.getComments() != null) {
-                for (CommentResponse comment : postDetail.getComments()) {
+                // Create a flat list of all comments and their replies
+                List<CommentResponse> allComments = new ArrayList<>();
+                flattenCommentTree(postDetail.getComments(), allComments);
+
+                for (CommentResponse comment : allComments) {
+                    // This assumes you have a `getUserVoteForComment` method similar to `getUserVoteForPost`
                     Optional<Vote> userCommentVote = voteService.getUserVoteForComment(currentUser, comment.getId());
                     userCommentVote.ifPresent(vote -> commentVotes.put(comment.getId(), vote.getVoteType()));
                 }
@@ -128,6 +131,22 @@ public class PostController {
             redirectAttributes.addFlashAttribute("errorMessage", "An error occurred while creating the post.");
             // Decide where to redirect on a generic error
             return "redirect:/home";
+        }
+    }
+
+    /**
+     * Helper method to recursively traverse the comment tree and add every comment to a flat list.
+     * @param comments The list of comments to traverse.
+     * @param flatList The list to add all found comments to.
+     */
+    private void flattenCommentTree(List<CommentResponse> comments, List<CommentResponse> flatList) {
+        if (comments == null || comments.isEmpty()) {
+            return;
+        }
+        for (CommentResponse comment : comments) {
+            flatList.add(comment);
+            // Recursively call for the replies of the current comment
+            flattenCommentTree(comment.getReplies(), flatList);
         }
     }
 }

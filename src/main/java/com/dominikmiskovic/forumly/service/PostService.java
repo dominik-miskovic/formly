@@ -68,7 +68,8 @@ public class PostService {
         Integer voteCount = voteRepository.sumVoteTypesByPostId(post.getId());
         dto.setVoteCount(voteCount);
 
-        dto.setCommentCount(post.getComments() != null ? post.getComments().size() : 0); // Be wary of N+1 here in lists
+        // Use the comment service to get the total count of all comments
+        dto.setCommentCount((int) commentService.getCommentCountForPost(post.getId()));
 
         return dto;
     }
@@ -104,6 +105,9 @@ public class PostService {
 
         // Populate comments
         dto.setComments(commentService.getCommentsWithReplies(post.getId()));
+
+        // Comment count
+        dto.setCommentCount((int) commentService.getCommentCountForPost(post.getId()));
 
         return dto;
     }

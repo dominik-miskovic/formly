@@ -19,4 +19,7 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
 
     // Find all top-level comments for a post (comments without a parent)
     List<Comment> findByPostIdAndParentCommentIsNull(Long postId);
+
+    // Efficiently counts all comments (including replies) for a given post.
+    long countByPostId(Long postId);
 }
