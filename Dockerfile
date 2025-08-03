@@ -1,15 +1,13 @@
-# Use a base image with Java pre-installed
-FROM openjdk:17-jdk-slim
-LABEL authors="dominikmiskovic"
-
-# Set the working directory inside the container
+# Stage 1: Build the application using Maven
+FROM maven:3.9.6-eclipse-temurin-21-alpine AS build
 WORKDIR /app
+COPY pom.xml .
+COPY src ./src
+RUN mvn clean install -DskipTests
 
-# Copy the packaged application JAR file to the container
-COPY target/forumly-app.jar app.jar
-
-# Expose the port your application runs on
+# Stage 2: Create a lightweight final image
+FROM eclipse-temurin:21-jre-alpine
+WORKDIR /app
+COPY --from=build /app/target/forumly-app.jar .
 EXPOSE 8080
-
-# The command to run your application
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["java", "-jar", "forumly-app.jar"]

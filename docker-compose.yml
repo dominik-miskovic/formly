@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  forumly-app:
+    build: .
+    image: forumly
+    container_name: forumly
+    ports:
+      - "8080:8080"
+    volumes:
+      - forumly-db-data:/app/data
+
+volumes:
+  forumly-db-data:

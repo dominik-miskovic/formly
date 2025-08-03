@@ -1,0 +1,16 @@
+# Ignore IDE and build-related files
+.idea/
+.vscode/
+target/
+.mvn/
+
+# Ignore log files
+*.log
+
+# Ignore Git files
+.git/
+.gitignore
+
+# Ignore Maven wrapper files
+mvnw
+mvnw.cmd
