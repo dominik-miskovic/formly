@@ -13,4 +13,4 @@ services:
       - forumly-db-data:/app/data
 
 volumes:
-  db-data:
+    forumly-db-data: {}

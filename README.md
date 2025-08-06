@@ -20,7 +20,7 @@ This is a Basic Forum as a self-contained Spring Boot application with an embedd
 1.  Unzip the `forumly-app.zip` file.
 2.  Navigate into the extracted folder.
 3.  Run the application either:
-   -   **With Docker:** ```docker-compose up --build -d```
+   -   **With Docker:** ```docker compose -f docker/docker-compose.yml up -d```
    -   **By command** in a shell: ```java -jar target/forumly-app.jar```
 
 ## How to Access the Application
