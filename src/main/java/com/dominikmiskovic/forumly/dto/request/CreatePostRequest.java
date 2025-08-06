@@ -8,7 +8,7 @@ import lombok.Data;
 public class CreatePostRequest {
 
     @NotBlank(message = "Post title cannot be empty.")
-    @Size(min = 3, max = 300, message = "Post title must be between 3 and 300 characters.")
+    @Size(max = 300, message = "Post title must be between 3 and 300 characters.")
     private String title;
 
     @NotBlank(message = "Post content cannot be empty.")

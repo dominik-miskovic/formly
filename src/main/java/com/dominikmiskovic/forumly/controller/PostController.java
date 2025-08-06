@@ -112,7 +112,7 @@ public class PostController {
         User currentUser = userService.findUserEntityByUsername(authentication.getName());
         if (currentUser == null) {
             redirectAttributes.addFlashAttribute("errorMessage", "User account not found.");
-            return "redirect:/home"; // Or an error page
+            return "redirect:/login"; // Or an error page
         }
 
         if (bindingResult.hasErrors()) {
