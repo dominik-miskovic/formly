@@ -1,6 +1,14 @@
 # Forumly Application
 
-This is a self-contained Spring Boot application with an embedded H2 database.
+This is a Basic Forum as a self-contained Spring Boot application with an embedded H2 database.
+
+## Features
+ - User Registration
+ - User Login
+ - User Logout
+ - Forum Creation
+ - Forum Posting
+ - Forum Commenting
 
 ## Prerequisites
 
