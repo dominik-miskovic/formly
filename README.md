@@ -26,9 +26,5 @@ This is a Basic Forum as a self-contained Spring Boot application with an embedd
 ## How to Access the Application
 
 -   **Web Application**: Open your browser and go to [http://localhost:8080](http://localhost:8080)
--   **H2 Database Console**: To view the database directly, go to [http://localhost:8080/h2-console](http://localhost:8080/h2-console)
-    -   **JDBC URL**: `jdbc:h2:file:./data/forumlydb`
-    -   **Username**: `sa`
-    -   **Password**: `password`
 
 When you run the application, a `data` directory will be created in the same folder, containing the database files.
