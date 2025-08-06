@@ -12,8 +12,8 @@
 
 -- Generate 10 Users (passwords are plain text for script simplicity)
 INSERT INTO app_user (username, password) VALUES
-                                              ('user1', 'pass1'), ('user2', 'pass2'), ('user3', 'pass3'), ('user4', 'pass4'), ('user5', 'pass5'),
-                                              ('user6', 'pass6'), ('user7', 'pass7'), ('user8', 'pass8'), ('user9', 'pass9'), ('user10', 'pass10');
+                                              ('Link', 'pass1'), ('Zelda', 'pass2'), ('Ganondorf', 'pass3'), ('Impa', 'pass4'), ('Sidon', 'pass5'),
+                                              ('Riju', 'pass6'), ('Tulin', 'pass7'), ('Yunobo', 'pass8'), ('Mipha', 'pass9'), ('Daruk', 'pass10');
 
 -- Generate 10 Posts by the users with varied timestamps
 -- Timestamps will range from ~11 months ago to very recent.

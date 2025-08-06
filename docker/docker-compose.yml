@@ -1,8 +1,10 @@
-version: '3.8'
+name: forumly
 
 services:
   forumly-app:
-    build: .
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
     image: forumly
     container_name: forumly
     ports:
@@ -11,4 +13,4 @@ services:
       - forumly-db-data:/app/data
 
 volumes:
-  forumly-db-data:
+  db-data:
